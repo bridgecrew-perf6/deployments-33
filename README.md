@@ -49,3 +49,29 @@ I attached a single policy:
 ```
 
 Allowing `s3:*` is totally unnecessary, but the risk is low and I don't want to take a bunch of time to figure out what least permissions for a deployment are.  Perhaps just `ListObjects` on the bucket and `PutObject`, and `PutObjectAcl` on the contents.  I'll probably circle back on this.
+
+## GitHub Actions
+
+As it turns out, GitHub has made managing deployments pretty transparent.  Here's the (truncated) configuration for pull request deployments:
+
+```yaml
+  deploy-pr:
+    name: Deploy Pull Request
+    needs: [build]
+    if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    environment: 
+      name: pull request
+      url: http://97a79ff-deployments-dev.s3-website-us-east-1.amazonaws.com/ui-${{ env.SHORT_SHA }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v2
+        ...
+      - uses: aws-actions/configure-aws-credentials@v1
+        ...
+      - run: ... deploy to s3://97a79ff-deployments-dev/ui-${{ env.SHORT_SHA }}
+```
+
+If a value is specified for `environment`, GitHub will automatically create a deployment when the job starts, and will update it with the outcome when it finishes.
