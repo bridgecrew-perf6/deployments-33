@@ -45,5 +45,5 @@ jobs:
       - run: |
           aws s3 cp s3://97a79ff-deployments-dev/ui/index.html s3://97a79ff-deployments-dev/ui/index.html \
             --metadata-directive REPLACE \
-            --content-type text/html
-            --cache-control max-age=0,no-cache,no-store,must-revalidate \
+            --content-type text/html \
+            --cache-control max-age=0,no-cache,no-store,must-revalidate
