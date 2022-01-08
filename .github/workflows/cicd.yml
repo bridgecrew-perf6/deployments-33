@@ -41,9 +41,11 @@ jobs:
       - run: |
           aws s3 sync build/. s3://97a79ff-deployments-dev/ui \
             --delete \
+            --acl public-read \
             --cache-control max-age=31536000
       - run: |
           aws s3 cp s3://97a79ff-deployments-dev/ui/index.html s3://97a79ff-deployments-dev/ui/index.html \
             --metadata-directive REPLACE \
+            --acl public-read \
             --content-type text/html \
-            --cache-control max-age=0,no-cache,no-store,must-revalidate
+            --cache-control max-age=0,no-cache,no-store,must-revalidate \
